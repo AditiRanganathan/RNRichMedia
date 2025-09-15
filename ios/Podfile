@@ -1,3 +1,4 @@
+source 'https://cdn.cocoapods.org/'
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -16,15 +17,27 @@ end
 
 target 'MyCLTApp' do
   config = use_native_modules!
+  pod 'clevertap-react-native', :path => '../node_modules/clevertap-react-native'
 
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+  
+  target 'imagePush' do
+    
+  end
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    #https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    
+    installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+          config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
+        end
+      end
+  
     react_native_post_install(
       installer,
       config[:reactNativePath],
